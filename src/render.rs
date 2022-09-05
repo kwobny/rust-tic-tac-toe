@@ -1,42 +1,48 @@
+use std::fmt::{Display, Formatter, Write, self};
+
 use super::board::{Board, Player};
 
-fn render_player(out: &mut String, player: Option<Player>) {
-    out.push(match player {
+fn render_player(out: &mut Formatter, player: Option<Player>) -> Result<(), fmt::Error> {
+    out.write_char(match player {
         None => ' ',
         Some(x) => match x {
             Player::X => 'X',
             Player::O => 'O',
         },
-    });
+    })
 }
 
-fn render_row(out: &mut String, row: &[Option<Player>]) {
+fn render_row(out: &mut Formatter, row: &[Option<Player>]) -> Result<(), fmt::Error> {
     let mut iter = row.iter().peekable();
     if iter.peek().is_none() {
-        return;
+        return Ok(());
     }
-    render_player(out, *iter.next().unwrap());
+    render_player(out, *iter.next().unwrap())?;
     for player in iter {
-        out.push('|');
-        render_player(out, *player);
+        out.write_char('|')?;
+        render_player(out, *player)?;
     }
+    out.write_char('\n')?;
+
+    Ok(())
 }
 
-/// This function returns a string that represents a graphical
-/// view of the board. It has newlines in it, and has a newline
-/// at the end. Use print!() to display it.
-pub fn render_board(board: Board) -> String {
-    let contents = board.contents();
-    let mut chunks = contents.chunks(board.width());
-    let mut out = String::new();
+/// This display has newlines in it, including a newline at the end.
+/// Use this with: print!("{board}");
+impl Display for Board {
+    fn fmt(&self, mut out: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let contents = self.contents();
+        let mut chunks = contents.chunks(self.width());
 
-    render_row(&mut out, chunks.next().unwrap());
-    for row in chunks {
-        for _ in 0..row.len() {
-            out.push_str("--");
+        render_row(&mut out, chunks.next().unwrap())?;
+        for row in chunks {
+            for _ in 0..row.len() {
+                out.write_str("--")?;
+            }
+            out.write_char('\n')?;
+            render_row(&mut out, row)?;
         }
-        render_row(&mut out, row);
-    }
 
-    out
+        Ok(())
+    }
 }

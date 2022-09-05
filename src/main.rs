@@ -1,3 +1,3 @@
 fn main() {
-    println!("Hello, world!");
+    tic_tac_toe::run();
 }
