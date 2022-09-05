@@ -7,12 +7,13 @@ pub enum Player {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub struct Position {
+pub struct Coordinates {
     pub x: usize,
     pub y: usize,
 }
+/// The stored field is an index into the contents array.
 #[derive(Clone, Copy, Debug)]
-pub struct ValidPosition(Position);
+pub struct ValidPosition(usize);
 
 pub struct Board {
     /// The contents of a board, in row major order.
@@ -36,18 +37,21 @@ impl Board {
         })
     }
 
-    pub fn construct_position(&self, position: Position) -> Result<ValidPosition, ()> {
+    pub fn position_from_coordinates(&self, position: Coordinates) -> Result<ValidPosition, ()> {
         for i in [position.x, position.y] {
             if i >= self.width {
                 return Err(());
             }
         }
-        Ok(ValidPosition(position))
+        Ok(ValidPosition(position.y*self.width + position.x))
+    }
+    pub fn position_from_index(&self, index: usize) -> Result<ValidPosition, ()> {
+        if index >= self.width {
+            return Err(());
+        }
+        Ok(ValidPosition(index))
     }
 
-    fn position_to_index(&self, position: ValidPosition) -> usize {
-        position.0.y*self.width + position.0.x
-    }
     /// Returns Err if the position is already set.
     /// Returns Ok else.
     pub fn set_position(&mut self, player: Player, position: ValidPosition)
@@ -56,13 +60,12 @@ impl Board {
         if value.is_some() {
             return Err(());
         }
-        let index = self.position_to_index(position);
-        self.contents[index] = Some(player);
+        self.contents[position.0] = Some(player);
 
         Ok(self)
     }
     pub fn get_at_position(&self, position: ValidPosition) -> Option<Player> {
-        self.contents[self.position_to_index(position)]
+        self.contents[position.0]
     }
     /// Returns the contents of the board in row major order.
     pub fn contents(&self) -> &[Option<Player>] {
