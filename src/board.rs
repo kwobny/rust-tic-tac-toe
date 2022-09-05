@@ -19,7 +19,7 @@ impl Player {
 impl Display for Player {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f,
-            "player {}",
+            "{}",
             match self {
                 Player::O => "O",
                 Player::X => "X",

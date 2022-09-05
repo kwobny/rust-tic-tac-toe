@@ -17,6 +17,7 @@ fn render_row(out: &mut Formatter, row: &[Option<Player>]) -> Result<(), fmt::Er
     if iter.peek().is_none() {
         return Ok(());
     }
+    write!(out, " ")?;
     render_player(out, *iter.next().unwrap())?;
     for player in iter {
         out.write_char('|')?;
@@ -36,9 +37,12 @@ impl Display for Board {
 
         render_row(&mut out, chunks.next().unwrap())?;
         for row in chunks {
-            for _ in 0..row.len() {
-                out.write_str("--")?;
+            out.write_str("--")?;
+            for _ in 1..row.len() {
+                out.write_str("+-")?;
             }
+            out.write_str("-")?;
+
             out.write_char('\n')?;
             render_row(&mut out, row)?;
         }
