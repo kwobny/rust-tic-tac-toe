@@ -20,14 +20,20 @@ pub struct Board {
     width: usize,
 }
 impl Board {
-    pub fn new(width: usize) -> Board {
+    /// width must not be zero.
+    /// This function returns Err if that is the case.
+    pub fn new(width: usize) -> Result<Board, ()> {
+        if width == 0 {
+            return Err(());
+        }
+
         let size = width.pow(2);
         let mut contents = Vec::with_capacity(size);
         contents.extend(repeat(None).take(size));
-        Board {
+        Ok(Board {
             contents,
             width,
-        }
+        })
     }
 
     pub fn construct_position(&self, position: Position) -> Result<ValidPosition, ()> {
@@ -62,6 +68,10 @@ impl Board {
     pub fn contents(&self) -> &[Option<Player>] {
         self.contents.as_slice()
     }
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
     pub fn winner(&self) -> Option<Player> {
         let mut lines = Vec::new();
         // Horizontal lines.
