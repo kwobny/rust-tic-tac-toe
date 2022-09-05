@@ -1,3 +1,4 @@
-fn main() {
-    tic_tac_toe::run();
+fn main() -> Result<(), anyhow::Error> {
+    tic_tac_toe::run()?;
+    Ok(())
 }

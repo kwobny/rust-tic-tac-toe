@@ -1,9 +1,36 @@
-use std::iter::repeat;
+use std::{iter::repeat, fmt::{Display, Write}};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Player {
     X,
     O,
+}
+impl Player {
+    pub fn toggle(self) -> Player {
+        match self {
+            Player::X => Player::O,
+            Player::O => Player::X,
+        }
+    }
+    pub fn toggle_in_place(&mut self) {
+        *self = self.toggle();
+    }
+}
+impl Display for Player {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f,
+            "player {}",
+            match self {
+                Player::O => "O",
+                Player::X => "X",
+            },
+        )
+    }
+}
+
+pub enum WinKind {
+    Tie,
+    Win(Player),
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -37,6 +64,7 @@ impl Board {
         })
     }
 
+    /// Returns err if coordinates are out of bounds.
     pub fn position_from_coordinates(&self, position: Coordinates) -> Result<ValidPosition, ()> {
         for i in [position.x, position.y] {
             if i >= self.width {
@@ -45,8 +73,9 @@ impl Board {
         }
         Ok(ValidPosition(position.y*self.width + position.x))
     }
+    /// Returns Err if index is out of bounds.
     pub fn position_from_index(&self, index: usize) -> Result<ValidPosition, ()> {
-        if index >= self.width {
+        if index >= self.contents.len() {
             return Err(());
         }
         Ok(ValidPosition(index))
@@ -75,7 +104,7 @@ impl Board {
         self.width
     }
 
-    pub fn winner(&self) -> Option<Player> {
+    pub fn winner(&self) -> Option<WinKind> {
         let mut lines = Vec::new();
         // Horizontal lines.
         for row in (0..self.contents.len()).step_by(self.width) {
@@ -91,9 +120,15 @@ impl Board {
 
         for iter in lines {
             let check = self.check_if_same_player(iter);
-            if check.is_some() {
-                return check;
+            if let Some(win) = check {
+                return Some(WinKind::Win(win));
             }
+        }
+
+        // Check if is tie.
+        let is_tie = self.contents.iter().all(|cell| cell.is_some());
+        if is_tie {
+            return Some(WinKind::Tie);
         }
 
         None
