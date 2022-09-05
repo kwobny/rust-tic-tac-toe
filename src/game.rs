@@ -27,18 +27,24 @@ pub fn run(first_player: Player) -> Result<(), anyhow::Error> {
         let mut turn = first_player;
 
         println!("Initial board state:");
+        println!();
         print!("{board}");
+        println!();
+
         loop {
             println!("Current turn: player {turn}");
-            println!("Enter a number from 0 - 8:");
+            println!("Enter a number from 1 - 9:");
             loop {
                 let num: usize = lines.next_line()?
                     .trim().parse()?;
+                if ! (1..=9).contains(&num) {
+                    println!("Number is out of bounds.");
+                    continue;
+                }
+                let num = num-1;
+
                 let res = board.set_position(turn, match board.position_from_index(num) {
-                    Err(_) => {
-                        println!("Number is out of bounds.");
-                        continue;
-                    },
+                    Err(_) => panic!(),
                     Ok(x) => x,
                 });
                 if res.is_err() {
@@ -49,6 +55,7 @@ pub fn run(first_player: Player) -> Result<(), anyhow::Error> {
                 break;
             }
 
+            println!();
             print!("{board}");
             println!();
 
@@ -58,15 +65,17 @@ pub fn run(first_player: Player) -> Result<(), anyhow::Error> {
                     WinKind::Tie => println!("Game ends in a tie!"),
                     WinKind::Win(player) => println!("Player {player} wins!"),
                 }
+                println!("Play again? (Y/N):");
                 loop {
-                    println!("Play again? (Y/N):");
                     let reply = lines.next_line()?;
                     match reply.trim() {
                         "N" => return Ok(()),
                         "Y" => {
+                            println!();
                             continue 'whole_game;
                         },
                         _ => {
+                            println!();
                             println!("Invalid response.");
                             continue;
                         },
