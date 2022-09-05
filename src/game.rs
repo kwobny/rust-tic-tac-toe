@@ -1,5 +1,5 @@
 use std::io::{self, Lines, StdinLock, Stdin};
-use anyhow::{anyhow, bail};
+use anyhow::anyhow;
 use crate::board::{Board, Player, WinKind};
 
 #[derive(Debug)]

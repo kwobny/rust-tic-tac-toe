@@ -1,4 +1,4 @@
-use std::{iter::repeat, fmt::{Display, Write}};
+use std::{iter::repeat, fmt::Display};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Player {
