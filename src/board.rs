@@ -180,7 +180,7 @@ impl Board {
             if check.is_some() {
                 if player_won.is_none() {
                     player_won = check;
-                } else {
+                } else if player_won.unwrap() != check.unwrap() {
                     return Some(EndResult::BothWin);
                 }
             }
