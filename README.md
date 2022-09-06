@@ -9,11 +9,11 @@ The game will start off at an empty board, and player X goes first.
 It then prompts you to enter a number from 1 - 9. This number represents
 where on the board to place down the X piece. The precise mapping is shown below.
 
- 1 | 2 | 3
----+---+---
- 4 | 5 | 6
----+---+---
- 7 | 8 | 9
+ 1 | 2 | 3 <br>
+---+---+---<br>
+ 4 | 5 | 6 <br>
+---+---+---<br>
+ 7 | 8 | 9 <br>
 
 After the piece is placed, the game switches to player O and then asks
 for another number from 1 - 9. This time, the number represents where to
